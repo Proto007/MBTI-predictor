@@ -6,7 +6,8 @@ from .models import *
 class TrainModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainModel
-        fields = ("dataset", "preprocessed")
+        fields = ("dataset", "preprocessed","accuracy")
+        read_only_fields = ["accuracy"]
 
 
 class ClassifySerializer(serializers.ModelSerializer):
