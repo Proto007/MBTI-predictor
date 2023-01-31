@@ -7,7 +7,8 @@ class TrainModel(models.Model):
     """
 
     dataset = models.FileField(upload_to="dataset/")
-    preprocessed = models.BooleanField()
+    preprocessed = models.BooleanField(default=False)
+    accuracy = models.FloatField(default=0.0)
 
 
 class Classify(models.Model):
