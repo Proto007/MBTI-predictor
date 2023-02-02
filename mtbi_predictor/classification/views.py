@@ -107,7 +107,7 @@ class TrainModelViewset(viewsets.ModelViewSet):
 
     def create(self, request):
         try:
-            df = pd.read_csv(request.data["dataset"]).sample(100)
+            df = pd.read_csv(request.data["dataset"])
         except Exception:
             return Response(
                 {"message": "pandas failed to read file"},
@@ -131,7 +131,7 @@ class TrainModelViewset(viewsets.ModelViewSet):
             [("tfidf", TfidfVectorizer()), ("classifier", LinearSVC())]
         )
         text_classifier.fit(train_x, train_y)
-        pickle.dump(text_classifier, open("new_svm_model", "wb"))
+        pickle.dump(text_classifier, open("new_svm_model.sav", "wb"))
         predictions = text_classifier.predict(test_x)
         accuracy = round(accuracy_score(test_y, predictions), 2)
         TrainModel.objects.create(
