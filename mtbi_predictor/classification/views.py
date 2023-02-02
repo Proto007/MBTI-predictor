@@ -1,31 +1,34 @@
-import pandas as pd
+import os
+import pickle
+import shutil
+
 import nltk
+import pandas as pd
+from nltk.corpus import stopwords, wordnet
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from nltk.corpus import stopwords, wordnet
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-
-from .models import *
-from .serializers import *
-import shutil
-import os
-from mtbi_predictor.settings import BASE_DIR
 from sklearn import model_selection
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
 from sklearn.pipeline import Pipeline
-import pickle
 from sklearn.svm import LinearSVC
 
-nltk.download('stopwords')
+from mtbi_predictor.settings import BASE_DIR
 
-def get_pos_tag(word:str) -> str:
+from .models import *
+from .serializers import *
+
+nltk.download("stopwords")
+
+
+def get_pos_tag(word: str) -> str:
     """
     Returns the pos tag of given word in a format that is recognized by wordnet lemmatizer
-    
+
     Reference: https://github.com/Proto007/Topic-Modeling-Book-Descriptions/blob/404f4700b73fbcedec55136a85f68ebcc21580f0/backend/services/model/dataPreprocess.py#L45
-    
+
     @params:
         word (string): query word
     @return
@@ -50,7 +53,7 @@ def get_pos_tag(word:str) -> str:
     return ""
 
 
-def lemmatize(word:str) -> str:
+def lemmatize(word: str) -> str:
     """
     Return lemmatized form of given word if it is a noun, verb, adjective or adverb.
 
@@ -74,7 +77,8 @@ def lemmatize(word:str) -> str:
     # Return the lemmatized form of the word
     return lemmatizer.lemmatize(word, pos_tag)
 
-def preprocess(post:str):
+
+def preprocess(post: str):
     """
     Apply tokenizing, filter stopwords, lemmatizing, case-folding to the given post
 
@@ -86,7 +90,9 @@ def preprocess(post:str):
     # tokenize the words in given post
     processed = word_tokenize(post)
     # filter stopwords in the post
-    processed = [word.strip() for word in processed if word not in stopwords.words('english')]
+    processed = [
+        word.strip() for word in processed if word not in stopwords.words("english")
+    ]
     # casefold all words in post to lower-case
     processed = [word.lower() for word in processed if len(word) > 1]
     # lemmatize the words in post
@@ -103,26 +109,38 @@ class TrainModelViewset(viewsets.ModelViewSet):
         try:
             df = pd.read_csv(request.data["dataset"]).sample(100)
         except Exception:
-            return Response({"message":"pandas failed to read file"}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+            return Response(
+                {"message": "pandas failed to read file"},
+                status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            )
         preprocessed = request.data.get("preprocessed", "")
         TrainModel.objects.all().delete()
-        if os.path.isdir(f'{BASE_DIR}/dataset'):
-            shutil.rmtree(f'{BASE_DIR}/dataset')
+        if os.path.isdir(f"{BASE_DIR}/dataset"):
+            shutil.rmtree(f"{BASE_DIR}/dataset")
         if not preprocessed:
-            df["posts"].apply(lambda p:preprocess(p))
-        train_x, test_x, train_y, test_y = model_selection.train_test_split(df['posts'],df['type'],test_size=0.2)
+            df["posts"].apply(lambda p: preprocess(p))
+        train_x, test_x, train_y, test_y = model_selection.train_test_split(
+            df["posts"], df["type"], test_size=0.2
+        )
         tfidf = TfidfVectorizer()
-        tfidf.fit_transform(df['posts'])
+        tfidf.fit_transform(df["posts"])
         train_x_tfidf = tfidf.transform(train_x)
         classifier = LinearSVC()
         classifier.fit(train_x_tfidf, train_y)
-        text_classifier = Pipeline([('tfidf', TfidfVectorizer()), ('classifier', LinearSVC())])
+        text_classifier = Pipeline(
+            [("tfidf", TfidfVectorizer()), ("classifier", LinearSVC())]
+        )
         text_classifier.fit(train_x, train_y)
-        pickle.dump(text_classifier, open('new_svm_model', 'wb'))
+        pickle.dump(text_classifier, open("new_svm_model", "wb"))
         predictions = text_classifier.predict(test_x)
-        accuracy = round(accuracy_score(test_y, predictions),2)
-        TrainModel.objects.create(dataset=request.data["dataset"], preprocessed=bool(preprocessed), accuracy=accuracy)
+        accuracy = round(accuracy_score(test_y, predictions), 2)
+        TrainModel.objects.create(
+            dataset=request.data["dataset"],
+            preprocessed=bool(preprocessed),
+            accuracy=accuracy,
+        )
         return Response(status=status.HTTP_200_OK)
+
 
 class ClassifyViewset(viewsets.ModelViewSet):
     queryset = Classify.objects.all()
