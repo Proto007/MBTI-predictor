@@ -13,5 +13,5 @@ class TrainModelSerializer(serializers.ModelSerializer):
 class ClassifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Classify
-        fields = ("query_text", "prediction")
+        fields = ("query_text", "prediction", "use_default")
         read_only_fields = ["prediction"]
