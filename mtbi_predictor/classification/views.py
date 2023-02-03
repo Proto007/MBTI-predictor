@@ -10,6 +10,7 @@ from nltk.tokenize import word_tokenize
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from sklearn import model_selection
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
 from sklearn.pipeline import Pipeline
@@ -113,7 +114,7 @@ class TrainModelViewset(viewsets.ModelViewSet):
                 {"message": "pandas failed to read file"},
                 status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             )
-        preprocessed = request.data.get("preprocessed", "")
+        preprocessed = request.data.get("preprocessed", False)
         TrainModel.objects.all().delete()
         if os.path.isdir(f"{BASE_DIR}/dataset"):
             shutil.rmtree(f"{BASE_DIR}/dataset")
@@ -125,10 +126,10 @@ class TrainModelViewset(viewsets.ModelViewSet):
         tfidf = TfidfVectorizer()
         tfidf.fit_transform(df["posts"])
         train_x_tfidf = tfidf.transform(train_x)
-        classifier = LinearSVC()
+        classifier = CalibratedClassifierCV(LinearSVC())
         classifier.fit(train_x_tfidf, train_y)
         text_classifier = Pipeline(
-            [("tfidf", TfidfVectorizer()), ("classifier", LinearSVC())]
+            [("tfidf", TfidfVectorizer()), ("classifier", CalibratedClassifierCV())]
         )
         text_classifier.fit(train_x, train_y)
         pickle.dump(text_classifier, open("new_svm_model.sav", "wb"))
@@ -145,3 +146,29 @@ class TrainModelViewset(viewsets.ModelViewSet):
 class ClassifyViewset(viewsets.ModelViewSet):
     queryset = Classify.objects.all()
     serializer_class = ClassifySerializer
+
+    def create(self, request):
+        serializer = ClassifySerializer
+        use_default = request.data.get("use_default", False)
+        if not use_default:
+            if not os.path.isfile("new_svm_model.sav"):
+                return Response(
+                    {"message": "Model not found. Try using default."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            svm_clf = pickle.load(open("new_svm_model.sav", "rb"))
+        else:
+            svm_clf = pickle.load(open("default_svm_model.sav", "rb"))
+        query = preprocess(request.data["query_text"])
+        predictions = svm_clf.predict_proba([query])
+        prob_dict = {svm_clf.classes_[n]: predictions[0][n] for n in range(16)}
+        top_5 = " ".join(
+            sorted(list(prob_dict.keys()), key=lambda x: prob_dict[x], reverse=True)[:5]
+        )
+        new_classification = Classify.objects.create(
+            query_text=request.data["query_text"],
+            use_default=bool(use_default),
+            prediction=top_5,
+        )
+        new_classification.save()
+        return Response(serializer(new_classification).data, status=status.HTTP_200_OK)
