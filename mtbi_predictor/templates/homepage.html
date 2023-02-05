@@ -14,7 +14,7 @@
         </div>
         <div class="form-check">
             <label class="form-check-label px-2">
-                <input type="checkbox" class="form-check-input" id="using_default" checked>
+                <input type="checkbox" class="form-check-input" name="using_default" checked>
                 using default model (MTBI-500 dataset)
             </label>
         </div>
@@ -22,4 +22,9 @@
             <button type="submit" class="btn btn-outline-dark">Predict</button>
         </div>
     </form>
+    <div>
+    {% if prediction %}
+        {{ prediction }}
+    {% endif %}
+    </div>
 </html>
