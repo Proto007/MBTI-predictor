@@ -1,5 +1,5 @@
 """
-ASGI config for mtbi_predictor project.
+ASGI config for mbti_predictor project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mtbi_predictor.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mbti_predictor.settings")
 
 application = get_asgi_application()

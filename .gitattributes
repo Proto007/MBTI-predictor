@@ -1,1 +1,1 @@
-mtbi_predictor/default_svm_model.sav filter=lfs diff=lfs merge=lfs -text
+mbti_predictor/default_svm_model.sav filter=lfs diff=lfs merge=lfs -text
