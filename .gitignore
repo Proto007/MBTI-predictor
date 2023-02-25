@@ -59,4 +59,4 @@ venv.bak/
 .history
 
 dataset
-mtbi_predictor/new_svm_model.sav
+mbti_predictor/new_svm_model.sav
