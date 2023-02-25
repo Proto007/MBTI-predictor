@@ -16,7 +16,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-from mtbi_predictor.settings import BASE_DIR
+from mbti_predictor.settings import BASE_DIR
 
 from .models import *
 from .serializers import *
