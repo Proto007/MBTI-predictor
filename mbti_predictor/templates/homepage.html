@@ -19,6 +19,9 @@
                     <a class="nav-link" href="https://www.kaggle.com/datasets/zeyadkhalid/mbti-personality-types-500-dataset" target="_blank">MBTI-500</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="https://en.wikipedia.org/wiki/Myers%E2%80%93Briggs_Type_Indicator" target="_blank">Myers-Briggs</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="https://github.com/Proto007/MBTI-predictor" target="_blank">Source</a>
                 </li>
             </ul>
@@ -40,7 +43,9 @@
     </form>
     <div>
     {% if prediction %}
-        {{ prediction }}
+        {% for p in prediction%}
+            {{ p }}
+        {% endfor %}
     {% endif %}
     </div>
 </html>
