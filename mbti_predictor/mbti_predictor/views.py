@@ -16,7 +16,7 @@ class Predict(APIView):
         query_text = str(request.data["query_text"])
         using_default = bool(request.data.get("using_default", False))
         p_tags = {
-            "INTJ":"THE ARCHITECT",
+            "INTJ": "THE ARCHITECT",
             "INTP": "THE LOGICIAN",
             "ENTJ": "THE COMMANDER",
             "ENTP": "THE DEBATER",
@@ -31,7 +31,7 @@ class Predict(APIView):
             "ISTP": "THE VIRTUOSO",
             "ISFP": "THE ADVENTURER",
             "ESTP": "THE ENTREPRENEUR",
-            "ESFP": "THE ENTERTAINER"
+            "ESFP": "THE ENTERTAINER",
         }
         p_desc = {
             "INTJ": "Have original minds and great drive for implementing their ideas and achieving their goals. Quickly see patterns in external events and develop long-range explanatory perspectives. When committed, organize a job and carry it through. Skeptical and independent, have high standards of competence and performance - for themselves and others.",
@@ -49,7 +49,7 @@ class Predict(APIView):
             "ISTP": "Tolerant and flexible, quiet observers until a problem appears, then act quickly to find workable solutions. Analyze what makes things work and readily get through large amounts of data to isolate the core of practical problems. Interested in cause and effect, organize facts using logical principles, value efficiency.",
             "ISFP": "Quiet, friendly, sensitive, and kind. Enjoy the present moment, what's going on around them. Like to have their own space and to work within their own time frame. Loyal and committed to their values and to people who are important to them. Dislike disagreements and conflicts, do not force their opinions or values on others.",
             "ESTP": "Flexible and tolerant, they take a pragmatic approach focused on immediate results. Theories and conceptual explanations bore them - they want to act energetically to solve the problem. Focus on the here-and-now, spontaneous, enjoy each moment that they can be active with others. Enjoy material comforts and style. Learn best through doing.",
-            "ESFP": "Outgoing, friendly, and accepting. Exuberant lovers of life, people, and material comforts. Enjoy working with others to make things happen. Bring common sense and a realistic approach to their work, and make work fun. Flexible and spontaneous, adapt readily to new people and environments. Learn best by trying a new skill with other people."
+            "ESFP": "Outgoing, friendly, and accepting. Exuberant lovers of life, people, and material comforts. Enjoy working with others to make things happen. Bring common sense and a realistic approach to their work, and make work fun. Flexible and spontaneous, adapt readily to new people and environments. Learn best by trying a new skill with other people.",
         }
         response = requests.post(
             request.build_absolute_uri(reverse("classification:classify-list")),
@@ -57,8 +57,15 @@ class Predict(APIView):
         )
         if response.status_code == 200:
             types = str(response.json()["prediction"]).split()
-            prediction = [{"type": t, "tag": p_tags[t], "description": p_desc[t], "img": f'{t}.svg', "link":f"https://www.16personalities.com/{t.lower()}-personality"} for t in types]
-            return render(
-                request, "homepage.html", {"prediction": prediction}
-            )
+            prediction = [
+                {
+                    "type": t,
+                    "tag": p_tags[t],
+                    "description": p_desc[t],
+                    "img": f"{t}.svg",
+                    "link": f"https://www.16personalities.com/{t.lower()}-personality",
+                }
+                for t in types
+            ]
+            return render(request, "homepage.html", {"prediction": prediction})
         return render(request, "homepage.html")
