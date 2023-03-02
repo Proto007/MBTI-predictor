@@ -16,7 +16,6 @@ class Predict(APIView):
 
     def post(self, request):
         query_text = str(request.data["query_text"])
-        using_default = bool(request.data.get("using_default", False))
         p_tags = {
             "INTJ": "THE ARCHITECT",
             "INTP": "THE LOGICIAN",
@@ -55,7 +54,7 @@ class Predict(APIView):
         }
         response = requests.post(
             request.build_absolute_uri(reverse("classification:classify-list")),
-            json={"query_text": query_text, "use_default": using_default},
+            json={"query_text": query_text, "use_default": True},
         )
         if response.status_code == 200:
             types = str(response.json()["prediction"]).split()
