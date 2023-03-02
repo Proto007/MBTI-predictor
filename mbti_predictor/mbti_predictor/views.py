@@ -16,6 +16,7 @@ class Predict(APIView):
 
     def post(self, request):
         query_text = str(request.data["query_text"])
+
         p_tags = {
             "INTJ": "THE ARCHITECT",
             "INTP": "THE LOGICIAN",
@@ -64,6 +65,7 @@ class Predict(APIView):
             c_2 = Counter("".join([p[2] for p in types])).most_common(1)[0][0]
             c_3 = Counter("".join([p[3] for p in types])).most_common(1)[0][0]
             most_likely = f"{c_0}{c_1}{c_2}{c_3}"
+
             prediction = [
                 {
                     "type": t,
@@ -74,6 +76,7 @@ class Predict(APIView):
                 }
                 for t in types
             ]
+
             return render(
                 request,
                 "homepage.html",
@@ -86,4 +89,5 @@ class Predict(APIView):
                     "most_likely_link": f"https://www.16personalities.com/{most_likely}-personality",
                 },
             )
+
         return render(request, "homepage.html")
