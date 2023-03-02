@@ -1,3 +1,5 @@
+from collections import Counter
+
 import requests
 from django.shortcuts import render
 from django.urls import reverse
@@ -57,15 +59,32 @@ class Predict(APIView):
         )
         if response.status_code == 200:
             types = str(response.json()["prediction"]).split()
+            most_likely = ""
+            c_0 = Counter("".join([p[0] for p in types])).most_common(1)[0][0]
+            c_1 = Counter("".join([p[1] for p in types])).most_common(1)[0][0]
+            c_2 = Counter("".join([p[2] for p in types])).most_common(1)[0][0]
+            c_3 = Counter("".join([p[3] for p in types])).most_common(1)[0][0]
+            most_likely = f"{c_0}{c_1}{c_2}{c_3}"
             prediction = [
                 {
                     "type": t,
                     "tag": p_tags[t],
                     "description": p_desc[t],
-                    "img": f"{t}.svg",
+                    "img": f"/avatar/{t}.svg",
                     "link": f"https://www.16personalities.com/{t.lower()}-personality",
                 }
                 for t in types
             ]
-            return render(request, "homepage.html", {"prediction": prediction})
+            return render(
+                request,
+                "homepage.html",
+                {
+                    "prediction": prediction,
+                    "highlight": f"/highlight/{most_likely}.svg",
+                    "most_likely": most_likely,
+                    "most_likely_tag": p_tags[most_likely],
+                    "most_likely_description": p_desc[most_likely],
+                    "most_likely_link": f"https://www.16personalities.com/{most_likely}-personality",
+                },
+            )
         return render(request, "homepage.html")
