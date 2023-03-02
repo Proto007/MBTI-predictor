@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html style="scroll-behavior: smooth;">
+<html lang="en" style="scroll-behavior: smooth;">
     <head>
         {% load static %}
+        {% comment %} Asset Source: https://www.16personalities.com/ {% endcomment %}
         <title>MBTI-predictor</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
@@ -69,16 +70,49 @@
             </div>
         </div>
     {% else %}
-        <form method="post" class="text-bg-dark">
-            <div class="form-group p-2">
-                <textarea class="form-control" name="query_text" rows="10" placeholder="Write a paragraph about yourself..." required></textarea>
-            </div>
-            <div class="d-grid gap-2 p-2">
-                <button type="submit" class="btn btn-outline-light">
-                    Predict
-                </button>
-            </div>
-        </form>
+        <div class="text-bg-dark p-2">
+            {% comment %} Content Source: https://www.bustle.com/p/what-do-the-myers-briggs-letters-mean-they-stand-for-very-important-personality-features-8553206 {% endcomment %}
+            <table class="table table-bordered align-middle text-center text-bg-dark m-0">
+                <tbody>
+                    <th colspan="4" class="text-bg-dark"><h4>Where you focus your attention...</h4></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">Extroverts are social creatures, they get their energy from interacting with others. They tend to be outgoing and enthusiastic as they are not easily deterred from new experiences.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: blue;"><h5>EXTROVERSION(E)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkblue"><h5>INTROVERSION(I)</h5></td>
+                        <td class="p-2">Introverts prefer to be alone and to think through their thoughts privately rather than speak them aloud with a friend. Introverts also tend to be sensitive, and can become exhausted by social interactions.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h4>The way you take in information...</h4></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">Sensing individuals rely on their five senses to relate to the world. They're practical, logical and detail-oriented. If they can't smell it, see it, feel it, taste it, or touch it, they have no natural resources to understand it.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: green;"><h5>SENSING(S)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkgreen;"><h5>INTROVERSION(N)</h5></td>
+                        <td class="p-2">Intuitive individuals think outside of the box and rely on their gut feelings to interact with the world. They're typically less organized and less interested in the facts. They might not know why they feel a certain way, but be certain that their feelings are correct.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h4>How you make decisions...</h4></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">People who are thought-forward are able to put their feelings aside and focus on the practical matters at hand. They can make unemotional decisions and easily follow their rational mind. They're not heartless, they're just wired differently.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: red;"><h5>THINKING(T)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkred;"><h5>FEELING(F)</h5></td>
+                        <td class="p-2">People led by their feelings tend to favor their emotions over their sense of logic. They're incredibly empathetic and will make choices based on how they affect people, rather than what's right and wrong.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h4>How you deal with the world...</h4></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">People who rely on their sense of judgment are typically organized and rational thinkers who like to work through problems in a linear and judicial way. These people are also responsible, and like to stick to the rules.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: magenta;"><h5>JUDGING(J)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: purple;"><h5>PERCEIVING(P)</h5></td>
+                        <td class="p-2">People who rely on their perception have a pretty relaxed way of dealing with issues. So relaxed, they might have a tendency to not finish what they start and be a little bit too disorganized to be productive on a regular basis.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <form method="post">
+                <div class="form-group">
+                    <textarea class="form-control" name="query_text" rows="10" placeholder="Write a paragraph about yourself..." required></textarea>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-light">Predict</button>
+                </div>
+            </form>
+        </div>
     {% endif %}
     </div>
 </html>
