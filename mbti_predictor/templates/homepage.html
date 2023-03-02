@@ -63,24 +63,18 @@
                             <h5 class="card-title"> {{ p.tag }} </h5>
                             <p class="card-text">{{ p.description }}</p>
                         </div>
-                        <a href={{ p.link }} target="_blank" class="btn btn-outline-dark float-right">More info</a>
+                        <a href={{ p.link }} target="_blank" class="btn btn-outline-secondary float-right">More info</a>
                     </div>    
                 {% endfor %}
             </div>
         </div>
     {% else %}
-        <form method="post">
+        <form method="post" class="text-bg-dark">
             <div class="form-group p-2">
-                <textarea class="form-control" name="query_text" rows="10" required></textarea>
-            </div>
-            <div class="form-check">
-                <label class="form-check-label px-2">
-                    <input type="checkbox" class="form-check-input" name="using_default" checked>
-                    using default model (MBTI-500 dataset)
-                </label>
+                <textarea class="form-control" name="query_text" rows="10" placeholder="Write a paragraph about yourself..." required></textarea>
             </div>
             <div class="d-grid gap-2 p-2">
-                <button type="submit" class="btn btn-outline-dark">
+                <button type="submit" class="btn btn-outline-light">
                     Predict
                 </button>
             </div>
