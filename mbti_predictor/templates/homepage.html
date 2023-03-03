@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html style="scroll-behavior: smooth;">
+<html lang="en" style="scroll-behavior: smooth;">
     <head>
         {% load static %}
+        {% comment %} Asset Source: https://www.16personalities.com/ {% endcomment %}
         <title>MBTI-predictor</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
@@ -48,6 +49,39 @@
                 <a class="btn btn-outline-light" href="{{ most_likely_link }}" target="_blank" type="button">Details >>></a>
             </div>
         </div>
+        {% comment %} Content Source: https://www.bustle.com/p/what-do-the-myers-briggs-letters-mean-they-stand-for-very-important-personality-features-8553206 {% endcomment %}
+        <table class="table table-bordered align-middle text-center text-bg-dark m-0">
+            <tbody>
+                <th colspan="4" class="text-bg-dark"><h5>Where you focus your attention...</h5></th>
+                <tr style="height:10vh;">
+                    <td class="p-2">Extroverts are social creatures, they get their energy from interacting with others. They tend to be outgoing and enthusiastic as they are not easily deterred from new experiences.</td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: blue;"><h5>EXTROVERSION(E)</h5></td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: darkblue"><h5>INTROVERSION(I)</h5></td>
+                    <td class="p-2">Introverts prefer to be alone and to think through their thoughts privately rather than speak them aloud with a friend. Introverts also tend to be sensitive, and can become exhausted by social interactions.</td>
+                </tr>
+                <th colspan="4" class="text-bg-dark"><h5>The way you take in information...</h5></th>
+                <tr style="height:10vh;">
+                    <td class="p-2">Sensing individuals rely on their five senses to relate to the world. They're practical, logical and detail-oriented. If they can't smell it, see it, feel it, taste it, or touch it, they have no natural resources to understand it.</td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: green;"><h5>SENSING(S)</h5></td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: darkgreen;"><h5>INTROVERSION(N)</h5></td>
+                    <td class="p-2">Intuitive individuals think outside of the box and rely on their gut feelings to interact with the world. They're typically less organized and less interested in the facts. They might not know why they feel a certain way, but be certain that their feelings are correct.</td>
+                </tr>
+                <th colspan="4" class="text-bg-dark"><h5>How you make decisions...</h5></th>
+                <tr style="height:10vh;">
+                    <td class="p-2">People who are thought-forward are able to put their feelings aside and focus on the practical matters at hand. They can make unemotional decisions and easily follow their rational mind. They're not heartless, they're just wired differently.</td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: red;"><h5>THINKING(T)</h5></td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: darkred;"><h5>FEELING(F)</h5></td>
+                    <td class="p-2">People led by their feelings tend to favor their emotions over their sense of logic. They're incredibly empathetic and will make choices based on how they affect people, rather than what's right and wrong.</td>
+                </tr>
+                <th colspan="4" class="text-bg-dark"><h5>How you deal with the world...</h5></th>
+                <tr style="height:10vh;">
+                    <td class="p-2">People who rely on their sense of judgment are typically organized and rational thinkers who like to work through problems in a linear and judicial way. These people are also responsible, and like to stick to the rules.</td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: magenta;"><h5>JUDGING(J)</h5></td>
+                    <td class="text-white font-weight-bold" style="width:15vw; background-color: purple;"><h5>PERCEIVING(P)</h5></td>
+                    <td class="p-2">People who rely on their perception have a pretty relaxed way of dealing with issues. So relaxed, they might have a tendency to not finish what they start and be a little bit too disorganized to be productive on a regular basis.</td>
+                </tr>
+            </tbody>
+        </table>
         <div class="align-items-center">
             <div class="card text-center p-3">
                 <h4 class="card-title">TOP FIVE PERSONALITY PREDICTIONS</h4>
@@ -69,16 +103,89 @@
             </div>
         </div>
     {% else %}
-        <form method="post" class="text-bg-dark">
-            <div class="form-group p-2">
-                <textarea class="form-control" name="query_text" rows="10" placeholder="Write a paragraph about yourself..." required></textarea>
+        <div class="text-bg-dark p-2">
+            <form method="post">
+                <div class="form-group">
+                    <textarea class="form-control" name="query_text" rows="10" placeholder="Write a paragraph about yourself..." style="-webkit-border-radius: 0px; -moz-border-radius: 0px; border-radius: 0px;"required></textarea>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-light">Predict</button>
+                </div>
+            </form>
+            <div class="p-2">
+                <div class="py-2">
+                    <h3>What is this?</h3>
+                    <p>This is a webapp allowing users to find their MBTI personality by writing a paragraph about themselves.</p>
+                </div>
+                <div class="py-2">
+                    <h3>Why did you make this?</h3>
+                    <p>Ever take the MBTI personality test and think to yourself, "Why is this questionaire so long and boring!?" I created this with the goal of making the process a bit more fun! Besides, I wanted to brush up on my webdev skills.</p>
+                <div>
+                <div class="py-2">
+                    <h3>How does it work?</h3>
+                    <p>Predictions are made using an SVM supervised classification model that has been trained on MBTI-500 dataset.</p>
+                </div>
+                <div class="py-2">
+                    <h3>What tools did you use?</h3>
+                    <p>I used scikit-learn python ML framework to train the model. Using the model, I created an api to make predictions using Django-Rest Framework. Finally, the frontend was made with a combination of Django-templates and Bootstrap CSS</p>
+                </div>
+                <div class="py-2">
+                    <h3>What did you learn while making this?</h3>
+                    <p>I learned new tools within Django that I had no idea existed. Furthermore, this is the first time I used linear SVM so the training process was a huge learning experience. Finally, I never relied Bootstrap CSS framework for frontend. After using it, I understand why it is so popular!</p>
+                </div>
+                <div class="py-2">
+                    <h3>How accurate are the predictions?</h3>
+                    <p>I don't want to get into the whole topic about whether or not the MBTI is a good way to categorize human personalities. As for the model, it has 84 percent accuracy on the test set. The prediction will show you top five personalities that the model thinks you belong to. Using the top five, I got the most common letters for all categories resulting in a hybrid prediction. Based on my tests, the hybrid prediction is more likely to be accurate. If it is not accurate, take a look at the top five and see if your personality is in there!</p>
+                </div>
+                <div class="py-2">
+                    <h3>Why is my predicted personality inaccurate?</h3>
+                    <p>There could be many reasons. Maybe the paragraph you wrote didn't reflect you as a person. Maybe you wrote too little. It is possible that the combined prediction is inaccurate but your personality is within the top five.</p>
+                </div>
+                <div class="py-2">
+                    <h3>How can the prediction be improved?</h3>
+                    <p>Certain personality types are more active on online forums resulting in an unbalanced dataset. Maybe I can use a different dataset with more even number of posts for each individual. SVM is just one classification technique. I can try using other techniques and compare the accuracy. SVM has different parameters that can be tweaked for different results. It is possible to improve this model by tweaking the parameters.</p>
+                </div>
+                <div class="py-2">
+                    <h3>If this prediction is not 100% accurate, why did you make this!?</h3>
+                    <p>Woooah, calm down mate. This was more of a learning experience than reaching perfection. I could end up overfitting for the training data if I try reaching high accuracy. Besides, I have other project ideas that I wanna move on to!</p>
+                </div>
+                <h3 class="py-2">What do the MBTI letters represent?</h3>
             </div>
-            <div class="d-grid gap-2 p-2">
-                <button type="submit" class="btn btn-outline-light">
-                    Predict
-                </button>
-            </div>
-        </form>
+            
+            {% comment %} Content Source: https://www.bustle.com/p/what-do-the-myers-briggs-letters-mean-they-stand-for-very-important-personality-features-8553206 {% endcomment %}
+            <table class="table table-bordered align-middle text-center text-bg-dark m-0">
+                <tbody>
+                    <th colspan="4" class="text-bg-dark"><h5>Where you focus your attention...</h5></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">Extroverts are social creatures, they get their energy from interacting with others. They tend to be outgoing and enthusiastic as they are not easily deterred from new experiences.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: blue;"><h5>EXTROVERSION(E)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkblue"><h5>INTROVERSION(I)</h5></td>
+                        <td class="p-2">Introverts prefer to be alone and to think through their thoughts privately rather than speak them aloud with a friend. Introverts also tend to be sensitive, and can become exhausted by social interactions.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h5>The way you take in information...</h5></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">Sensing individuals rely on their five senses to relate to the world. They're practical, logical and detail-oriented. If they can't smell it, see it, feel it, taste it, or touch it, they have no natural resources to understand it.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: green;"><h5>SENSING(S)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkgreen;"><h5>INTROVERSION(N)</h5></td>
+                        <td class="p-2">Intuitive individuals think outside of the box and rely on their gut feelings to interact with the world. They're typically less organized and less interested in the facts. They might not know why they feel a certain way, but be certain that their feelings are correct.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h5>How you make decisions...</h5></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">People who are thought-forward are able to put their feelings aside and focus on the practical matters at hand. They can make unemotional decisions and easily follow their rational mind. They're not heartless, they're just wired differently.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: red;"><h5>THINKING(T)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: darkred;"><h5>FEELING(F)</h5></td>
+                        <td class="p-2">People led by their feelings tend to favor their emotions over their sense of logic. They're incredibly empathetic and will make choices based on how they affect people, rather than what's right and wrong.</td>
+                    </tr>
+                    <th colspan="4" class="text-bg-dark"><h5>How you deal with the world...</h5></th>
+                    <tr style="height:10vh;">
+                        <td class="p-2">People who rely on their sense of judgment are typically organized and rational thinkers who like to work through problems in a linear and judicial way. These people are also responsible, and like to stick to the rules.</td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: magenta;"><h5>JUDGING(J)</h5></td>
+                        <td class="text-white font-weight-bold" style="width:15vw; background-color: purple;"><h5>PERCEIVING(P)</h5></td>
+                        <td class="p-2">People who rely on their perception have a pretty relaxed way of dealing with issues. So relaxed, they might have a tendency to not finish what they start and be a little bit too disorganized to be productive on a regular basis.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     {% endif %}
     </div>
 </html>
