@@ -59,13 +59,15 @@ class Predict(APIView):
         )
         if response.status_code == 200:
             types = str(response.json()["prediction"]).split()
+            # combine most common letters from top 5 predictions
             most_likely = ""
             c_0 = Counter("".join([p[0] for p in types])).most_common(1)[0][0]
             c_1 = Counter("".join([p[1] for p in types])).most_common(1)[0][0]
             c_2 = Counter("".join([p[2] for p in types])).most_common(1)[0][0]
             c_3 = Counter("".join([p[3] for p in types])).most_common(1)[0][0]
             most_likely = f"{c_0}{c_1}{c_2}{c_3}"
-
+            most_likely_letters = {"c_0": c_0, "c_1": c_1, "c_2": c_2, "c_3": c_3}
+            # prepare context for the frontend
             prediction = [
                 {
                     "type": t,
@@ -76,7 +78,7 @@ class Predict(APIView):
                 }
                 for t in types
             ]
-
+            # render template with context from predictions
             return render(
                 request,
                 "homepage.html",
@@ -87,6 +89,7 @@ class Predict(APIView):
                     "most_likely_tag": p_tags[most_likely],
                     "most_likely_description": p_desc[most_likely],
                     "most_likely_link": f"https://www.16personalities.com/{most_likely}-personality",
+                    "most_likely_letters": most_likely_letters,
                 },
             )
 
