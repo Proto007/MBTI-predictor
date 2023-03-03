@@ -132,7 +132,7 @@ class TrainModelViewset(viewsets.ModelViewSet):
             [("tfidf", TfidfVectorizer()), ("classifier", CalibratedClassifierCV())]
         )
         text_classifier.fit(train_x, train_y)
-        pickle.dump(text_classifier, open("new_svm_model.sav", "wb"))
+        pickle.dump(text_classifier, open("default_svm_model.sav", "wb"))
         predictions = text_classifier.predict(test_x)
         accuracy = round(accuracy_score(test_y, predictions), 2)
         TrainModel.objects.create(
