@@ -103,10 +103,23 @@ def preprocess(post: str):
 
 
 class TrainModelViewset(viewsets.ModelViewSet):
+    """
+    Responsible for training the svm model given a dataset file and a boolean(indicates whether or not the data is already preprocessed)
+    """
+
     queryset = TrainModel.objects.all()
     serializer_class = TrainModelSerializer
 
     def create(self, request):
+        """
+        Train an svm model
+
+        @params:
+            request: contains a `dataset` file and boolean to indicate if data has been `preprocessed`
+        @return:
+            Returns a response indicating if the training process was successful. Saves the svm model as `default_svm_model.sav` using pickle
+        """
+        # try reading the csv file, return 415 response if file can't be read
         try:
             df = pd.read_csv(request.data["dataset"])
         except Exception:
@@ -114,41 +127,65 @@ class TrainModelViewset(viewsets.ModelViewSet):
                 {"message": "pandas failed to read file"},
                 status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             )
+        # check if the dataset is preprocessed
         preprocessed = request.data.get("preprocessed", False)
         TrainModel.objects.all().delete()
+        # remove old dataset
         if os.path.isdir(f"{BASE_DIR}/dataset"):
             shutil.rmtree(f"{BASE_DIR}/dataset")
+        # preprocess data if data not already preprocessed
         if not preprocessed:
             df["posts"].apply(lambda p: preprocess(p))
+        # create training and test sets
         train_x, test_x, train_y, test_y = model_selection.train_test_split(
             df["posts"], df["type"], test_size=0.2
         )
+        # tf-idf feature extraction
         tfidf = TfidfVectorizer()
         tfidf.fit_transform(df["posts"])
         train_x_tfidf = tfidf.transform(train_x)
+        # prepare and train linear svm model
         classifier = CalibratedClassifierCV(LinearSVC())
         classifier.fit(train_x_tfidf, train_y)
         text_classifier = Pipeline(
             [("tfidf", TfidfVectorizer()), ("classifier", CalibratedClassifierCV())]
         )
         text_classifier.fit(train_x, train_y)
+        # save model using pickle
         pickle.dump(text_classifier, open("default_svm_model.sav", "wb"))
         predictions = text_classifier.predict(test_x)
+        # get model accuracy on test set
         accuracy = round(accuracy_score(test_y, predictions), 2)
+        # save training info in database
         TrainModel.objects.create(
             dataset=request.data["dataset"],
             preprocessed=bool(preprocessed),
             accuracy=accuracy,
         )
+        # return 200 response indicating successful training
         return Response(status=status.HTTP_200_OK)
 
 
 class ClassifyViewset(viewsets.ModelViewSet):
+    """
+    Make predictions given a query string
+    """
+
     queryset = Classify.objects.all()
     serializer_class = ClassifySerializer
 
     def create(self, request):
+        """
+        Get top 5 predictions made by svm model based on given query string
+
+        @params:
+            request: contains `use_default` boolean indicating the usage of the default_svm_model, and `query_text` that is used to make a prediction
+        @return:
+            Returns a response indicating if the query was successful, response contains top_5 personality type predictions made by the model for the given `query_text`
+        """
         serializer = ClassifySerializer
+        # try to use a newly trained model if `use_default` is false, use default model if `use_default` is true
+        # this feature is never used in the frontend because it is very unlikely that someone will try this out
         use_default = request.data.get("use_default", False)
         if not use_default:
             if not os.path.isfile("new_svm_model.sav"):
@@ -159,16 +196,21 @@ class ClassifyViewset(viewsets.ModelViewSet):
             svm_clf = pickle.load(open("new_svm_model.sav", "rb"))
         else:
             svm_clf = pickle.load(open("default_svm_model.sav", "rb"))
+        # preprocess the `query_text`
         query = preprocess(request.data["query_text"])
+        # get predictions from the svm model
         predictions = svm_clf.predict_proba([query])
+        # get the top 5 in a string format
         prob_dict = {svm_clf.classes_[n]: predictions[0][n] for n in range(16)}
         top_5 = " ".join(
             sorted(list(prob_dict.keys()), key=lambda x: prob_dict[x], reverse=True)[:5]
         )
+        # save the query information in the database
         new_classification = Classify.objects.create(
             query_text=request.data["query_text"],
             use_default=bool(use_default),
             prediction=top_5,
         )
         new_classification.save()
+        # return response with status 200 indicating success
         return Response(serializer(new_classification).data, status=status.HTTP_200_OK)
